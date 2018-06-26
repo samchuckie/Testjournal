@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MyDay"
+    android:padding="16dp"
+    android:orientation="vertical"
+    >
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Title"
+        android:id="@+id/titler"
+
+
+        />
+    <EditText
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:inputType="textMultiLine"
+        android:scrollbars="vertical"
+        android:minLines="2"
+        android:maxLines="3"
+        android:singleLine="false"
+        android:scrollHorizontally="false"
+        android:lines="8"
+        android:gravity="top"
+        android:id="@+id/storer"
+        />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_marginTop="16dp"
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        app:srcCompat="@android:drawable/btn_dialog" />
+
+
+</LinearLayout>
