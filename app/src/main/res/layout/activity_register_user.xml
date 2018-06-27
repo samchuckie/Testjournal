@@ -4,33 +4,32 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".Register_user"
     android:padding="50dp"
     android:orientation="vertical"
     >
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp"
+        android:id="@+id/reguser"
 
+        />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        android:id="@+id/username"
-         />
+        android:paddingBottom="16dp"
+        android:id="@+id/regpass"
+        />
     <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/password"
+        android:id="@+id/confirmpassword"
         />
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/signuer"
-        android:onClick="search"/>
-    <EditText
-        android:layout_marginTop="56dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New User?"
+        android:id="@+id/adduser"
         />
-
 
 </LinearLayout>
