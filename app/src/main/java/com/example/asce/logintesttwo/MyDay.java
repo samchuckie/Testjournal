@@ -24,7 +24,6 @@ public class MyDay extends AppCompatActivity {
     EditText titledittext,desc;
     private DatabaseReference mDatabase;
     ArrayList<jentry> abc;
-    ArrayList<String> a;
 
 
     @Override
@@ -36,10 +35,11 @@ public class MyDay extends AppCompatActivity {
         titledittext = findViewById(R.id.titler);
         desc = findViewById(R.id.storer);
         writeNewUser("id","Title ", "sec");
-        abc= new ArrayList<jentry>();
+        abc= new ArrayList<>();
 
 //                      if(TextUtils.isEmpty(enteredTask)){
         // we turned of animation
+
 
 
 
@@ -58,6 +58,10 @@ public class MyDay extends AppCompatActivity {
 
             }
         });
+        for(int x=0 ;x < 5;x++)
+        {
+            Log.i("sam", "abc");
+        }
 
 
 
@@ -68,21 +72,20 @@ public class MyDay extends AppCompatActivity {
         {
             jentry jj= dataSnapshot1.getValue(jentry.class);
             abc.add(jj);
-            int a=0;
             Log.i("sam","array added");
             Log.i("sam" , "" + abc.size());
 
 
 
         }
-        for (int x=0 ;x<5;x++)
+        for (int x=0 ;x<abc.size();x++)
         {
             Log.i("sam", abc.get(x).aaa() + "   -  " + abc.get(x).bbb() + "\n");
         }
 
     }
 
-    private void writeNewUser(String userId, String name, String content) {
+     private void writeNewUser(String userId, String name, String content) {
         jentry user = new jentry(name, content);
 
         mDatabase.child("users").child(userId).child("1").setValue(user);

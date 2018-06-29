@@ -22,7 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void search(View view) {
 
-        Intent intent = new Intent(this ,MyDay.class);
+        Intent intent = new Intent(this ,Allentries.class);
         startActivity(intent);
     }
 }
