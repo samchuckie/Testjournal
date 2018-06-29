@@ -8,6 +8,7 @@ import android.view.View;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG =MainActivity.class.getSimpleName() ;
     private FirebaseAuth mAuth;
     String email,password;
 

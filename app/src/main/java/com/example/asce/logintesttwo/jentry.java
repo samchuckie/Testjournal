@@ -15,4 +15,12 @@ public class jentry {
         this.Title=Title;
         this.content=content;
     }
+
+    public String aaa() {
+        return Title;
+    }
+
+    public String bbb() {
+        return content;
+    }
 }
