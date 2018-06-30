@@ -3,10 +3,10 @@ package com.example.asce.logintesttwo;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 
 import com.example.asce.logintesttwo.Database.AppExecutors;
@@ -20,13 +20,12 @@ import com.google.firebase.database.FirebaseDatabase;
 
 
 public class MyDay extends AppCompatActivity {
-    FloatingActionButton addbutton ;
+    Button addbutton ;
     public static final String EXTRA_TASK_ID = "extraTaskId";
     String daydate,story,storystitle;
     EditText titledittext,desc;
     private DatabaseReference mDatabase;
-    int counter;
-    String counterstring;
+    String username;
     int entryid = 0;
     private EntryDatabase entryDatabase;
     private EntryRom entryRom;
@@ -39,8 +38,6 @@ public class MyDay extends AppCompatActivity {
         addbutton=findViewById(R.id.floatingActionButton);
         titledittext = findViewById(R.id.titler);
         desc = findViewById(R.id.storer);
-        counter = 7 ;
-        counterstring = String.valueOf(counter);
         entryDatabase=EntryDatabase.getinstance(this);
 
 //           TODO :          if(TextUtils.isEmpty(enteredTask)){
@@ -74,8 +71,14 @@ public class MyDay extends AppCompatActivity {
                     titledittext.setText(gottentitle);
                     desc.setText(gottendesc);
 
+
+
+
+
+
                 }
             });
+
 
 
         }
@@ -101,13 +104,13 @@ public class MyDay extends AppCompatActivity {
         jentry user = new jentry(name, content);
 
 
-         mDatabase.child("users").child("id").child(counterstring).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+         mDatabase.child("users").child("id").child(userId).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
              @Override
              public void onComplete(@NonNull Task<Void> task) {
                  Log.i("sam" , "Succesfull");
              }
          });
-         counter++;
+
     }
 
 
@@ -115,15 +118,60 @@ public class MyDay extends AppCompatActivity {
     public void sick(View view) {
         final String gottentitle =titledittext.getText().toString();
         final String gottendesc =desc.getText().toString();
-        counterstring = String.valueOf(counter);
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                EntryRom entryRom =new EntryRom(gottentitle,gottendesc);
+                 entryRom =new EntryRom(gottentitle,gottendesc);
                 entryDatabase.entryDao().insertTask(entryRom);
+                EntryRom last=  entryDatabase.entryDao().lasttask();
+                int ids=last.getId();
+                 username=String.valueOf(ids);
+                Log.i("sam", username);
+
+                writeNewUser(username,gottentitle,gottendesc);
             }
         });
 
        // writeNewUser(counterstring ,gottentitle,gottendesc);
+    }
+
+    public void delete(View view) {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                entryRom=  entryDatabase.entryDao().selecttask(entryid);
+                entryDatabase.entryDao().deleteTask(entryRom);
+            }
+        });
+    }
+
+    public void update(View view) {
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final String gottentitle =titledittext.getText().toString();
+                final String gottendesc =desc.getText().toString();
+                EntryRom entryRom =new EntryRom(gottentitle,gottendesc);
+                entryRom.setId(entryid);
+
+                entryDatabase.entryDao().updateTask(entryRom);
+                username=String.valueOf(entryid);
+                writeNewUser(username,gottentitle,gottendesc);
+
+            }
+        });
+
+    }
+    private void updateuser(String userId, String name, String content) {
+        jentry user = new jentry(name, content);
+
+
+        mDatabase.child("users").child("id").child(userId).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Log.i("sam" , "Succesfull");
+            }
+        });
+
     }
 }

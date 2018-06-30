@@ -17,6 +17,8 @@ public interface EntryDao {
 
     @Query("SELECT * FROM EntryRom  WHERE id =:id")
     EntryRom selecttask(int id);
+    @Query("SELECT * FROM EntryRom ORDER BY id DESC LIMIT 1")
+    EntryRom lasttask();
 
     @Insert
     void insertTask(EntryRom entryRom);
