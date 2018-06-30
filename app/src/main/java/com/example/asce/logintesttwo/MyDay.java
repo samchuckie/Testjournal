@@ -1,5 +1,6 @@
 package com.example.asce.logintesttwo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -7,24 +8,28 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
+import com.example.asce.logintesttwo.Database.AppExecutors;
+import com.example.asce.logintesttwo.Database.EntryDatabase;
+import com.example.asce.logintesttwo.Database.EntryRom;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 
 
 public class MyDay extends AppCompatActivity {
     FloatingActionButton addbutton ;
+    public static final String EXTRA_TASK_ID = "extraTaskId";
     String daydate,story,storystitle;
     EditText titledittext,desc;
     private DatabaseReference mDatabase;
-    ArrayList<jentry> abc;
-
+    int counter;
+    String counterstring;
+    int entryid = 0;
+    private EntryDatabase entryDatabase;
+    private EntryRom entryRom;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,67 +39,91 @@ public class MyDay extends AppCompatActivity {
         addbutton=findViewById(R.id.floatingActionButton);
         titledittext = findViewById(R.id.titler);
         desc = findViewById(R.id.storer);
-        writeNewUser("id","Title ", "sec");
-        abc= new ArrayList<>();
+        counter = 7 ;
+        counterstring = String.valueOf(counter);
+        entryDatabase=EntryDatabase.getinstance(this);
 
-//                      if(TextUtils.isEmpty(enteredTask)){
+//           TODO :          if(TextUtils.isEmpty(enteredTask)){
         // we turned of animation
-
-
-
-
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                getallchilds(dataSnapshot.child("users").child("id"));
-                Toast.makeText(getApplicationContext(), "some data has changed",Toast.LENGTH_SHORT).show();
-                Log.d("sam" , "data has been changed");
-                Log.i("sam" , "Number of children " + dataSnapshot.child("users").child("id").getChildrenCount() );
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
-        for(int x=0 ;x < 5;x++)
+        Intent intent =getIntent();
+        if (intent!=null && intent.hasExtra(EXTRA_TASK_ID))
         {
-            Log.i("sam", "abc");
+        Log.i("sam", "it has something");
+        entryid = intent.getIntExtra(EXTRA_TASK_ID ,entryid);
+//        String node = String.valueOf(entryid);
+//            mDatabase.child("users").child("id").child(node).addValueEventListener(new ValueEventListener() {
+//                @Override
+//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                    jentry jj= dataSnapshot.getValue(jentry.class);
+//                Log.i("sam", " " + dataSnapshot.getValue() );
+//                Log.i("sam" , "Title -" + jj.aaa() + " Content -  " + jj.bbb() );
+////                    getallchilds(dataSnapshot);
+//                }
+//
+//                @Override
+//                public void onCancelled(@NonNull DatabaseError databaseError) {
+//
+//                }
+//            });
+            AppExecutors.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                  entryRom=  entryDatabase.entryDao().selecttask(entryid);
+                    final String gottentitle =entryRom.getTitle();
+                    final String gottendesc = entryRom.getContent();
+                    titledittext.setText(gottentitle);
+                    desc.setText(gottendesc);
+
+                }
+            });
+
+
         }
+
+
 
 
 
     }
 
     private void getallchilds(DataSnapshot dataSnapshot) {
-        for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren())
-        {
-            jentry jj= dataSnapshot1.getValue(jentry.class);
-            abc.add(jj);
-            Log.i("sam","array added");
-            Log.i("sam" , "" + abc.size());
-
+        for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+            jentry jj = dataSnapshot1.getValue(jentry.class);
+            Log.i("sam", "Succesful man");
+            Log.i("sam", jj.aaa() + "   -  " + jj.bbb() + "\n");
 
 
         }
-        for (int x=0 ;x<abc.size();x++)
-        {
-            Log.i("sam", abc.get(x).aaa() + "   -  " + abc.get(x).bbb() + "\n");
-        }
-
     }
 
-     private void writeNewUser(String userId, String name, String content) {
+
+    private void writeNewUser(String userId, String name, String content) {
         jentry user = new jentry(name, content);
 
-        mDatabase.child("users").child(userId).child("1").setValue(user);
+
+         mDatabase.child("users").child("id").child(counterstring).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+             @Override
+             public void onComplete(@NonNull Task<Void> task) {
+                 Log.i("sam" , "Succesfull");
+             }
+         });
+         counter++;
     }
 
 
 
     public void sick(View view) {
-        String gottentitle =titledittext.getText().toString();
-        desc.setText(gottentitle);
+        final String gottentitle =titledittext.getText().toString();
+        final String gottendesc =desc.getText().toString();
+        counterstring = String.valueOf(counter);
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                EntryRom entryRom =new EntryRom(gottentitle,gottendesc);
+                entryDatabase.entryDao().insertTask(entryRom);
+            }
+        });
+
+       // writeNewUser(counterstring ,gottentitle,gottendesc);
     }
 }

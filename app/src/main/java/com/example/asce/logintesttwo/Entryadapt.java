@@ -7,10 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.asce.logintesttwo.Database.EntryRom;
+
 import java.util.List;
 
 class Entryadapt extends RecyclerView.Adapter<Entryadapt.ViewHolder> {
-    List<jentry> adaptjentries;
+    List<EntryRom> adaptjentries;
+    ItemClickListener mItemClickListener;
+
+    public Entryadapt(ItemClickListener listener) {
+        mItemClickListener=listener;
+    }
+
     @NonNull
     @Override
     public Entryadapt.ViewHolder onCreateViewHolder  (@NonNull ViewGroup parent, int viewType) {
@@ -21,9 +29,10 @@ class Entryadapt extends RecyclerView.Adapter<Entryadapt.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull Entryadapt.ViewHolder holder, int position) {
-        jentry jj= adaptjentries.get(position);
-        String titleer =jj.aaa();
-        String conterer =jj.bbb();
+        EntryRom jj= adaptjentries.get(position);
+        String titleer =jj.getTitle();
+        String conterer =jj.getContent()
+                ;
         holder.tt.setText(titleer);
         holder.cc.setText(conterer);
 
@@ -36,19 +45,31 @@ class Entryadapt extends RecyclerView.Adapter<Entryadapt.ViewHolder> {
         }
         return adaptjentries.size();
     }
-    public void setentries(List<jentry> jentries)
+    public void setentries(List<EntryRom> jentries)
     {
         adaptjentries =jentries;
         notifyDataSetChanged();
 
     }
+    public interface ItemClickListener {
+        void onItemClickListener(int itemId);
+    }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+
+
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView tt,cc;
         public ViewHolder(View itemView) {
             super(itemView);
             tt =itemView.findViewById(R.id.title_tv);
             cc =itemView.findViewById(R.id.content_tv);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int elementid =adaptjentries.get(getAdapterPosition()).getId();
+            mItemClickListener.onItemClickListener(elementid);
         }
     }
 }

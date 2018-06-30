@@ -30,6 +30,7 @@
         android:lines="8"
         android:gravity="top"
         android:id="@+id/storer"
+
         />
 
     <android.support.design.widget.FloatingActionButton
