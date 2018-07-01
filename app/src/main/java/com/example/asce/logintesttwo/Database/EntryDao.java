@@ -12,11 +12,11 @@ import java.util.List;
 
 @Dao
 public interface EntryDao {
+
     @Query("SELECT * FROM EntryRom ORDER BY id")
     LiveData<List<EntryRom>> loadall();
-
     @Query("SELECT * FROM EntryRom  WHERE id =:id")
-    EntryRom selecttask(int id);
+    EntryRom selecttask(String id);
     @Query("SELECT * FROM EntryRom ORDER BY id DESC LIMIT 1")
     EntryRom lasttask();
 

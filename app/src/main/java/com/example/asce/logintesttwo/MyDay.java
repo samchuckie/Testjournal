@@ -2,7 +2,6 @@ package com.example.asce.logintesttwo;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -12,11 +11,11 @@ import android.widget.EditText;
 import com.example.asce.logintesttwo.Database.AppExecutors;
 import com.example.asce.logintesttwo.Database.EntryDatabase;
 import com.example.asce.logintesttwo.Database.EntryRom;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class MyDay extends AppCompatActivity {
@@ -25,10 +24,12 @@ public class MyDay extends AppCompatActivity {
     String daydate,story,storystitle;
     EditText titledittext,desc;
     private DatabaseReference mDatabase;
-    String username;
-    int entryid = 0;
+    String extraname=null;
     private EntryDatabase entryDatabase;
     private EntryRom entryRom;
+     String gottentitle;
+     String gottendesc;
+     String keys;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,41 +46,9 @@ public class MyDay extends AppCompatActivity {
         Intent intent =getIntent();
         if (intent!=null && intent.hasExtra(EXTRA_TASK_ID))
         {
-        Log.i("sam", "it has something");
-        entryid = intent.getIntExtra(EXTRA_TASK_ID ,entryid);
-//        String node = String.valueOf(entryid);
-//            mDatabase.child("users").child("id").child(node).addValueEventListener(new ValueEventListener() {
-//                @Override
-//                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                    jentry jj= dataSnapshot.getValue(jentry.class);
-//                Log.i("sam", " " + dataSnapshot.getValue() );
-//                Log.i("sam" , "Title -" + jj.aaa() + " Content -  " + jj.bbb() );
-////                    getallchilds(dataSnapshot);
-//                }
+            extraname=intent.getStringExtra(EXTRA_TASK_ID);
+        Log.i("sam", "it has something that is " + extraname );
 //
-//                @Override
-//                public void onCancelled(@NonNull DatabaseError databaseError) {
-//
-//                }
-//            });
-            AppExecutors.getInstance().diskIO().execute(new Runnable() {
-                @Override
-                public void run() {
-                  entryRom=  entryDatabase.entryDao().selecttask(entryid);
-                    final String gottentitle =entryRom.getTitle();
-                    final String gottendesc = entryRom.getContent();
-                    titledittext.setText(gottentitle);
-                    desc.setText(gottendesc);
-
-
-
-
-
-
-                }
-            });
-
-
 
         }
 
@@ -89,89 +58,81 @@ public class MyDay extends AppCompatActivity {
 
     }
 
-    private void getallchilds(DataSnapshot dataSnapshot) {
-        for(DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-            jentry jj = dataSnapshot1.getValue(jentry.class);
-            Log.i("sam", "Succesful man");
-            Log.i("sam", jj.aaa() + "   -  " + jj.bbb() + "\n");
-
-
-        }
-    }
-
-
-    private void writeNewUser(String userId, String name, String content) {
-        jentry user = new jentry(name, content);
-
-
-         mDatabase.child("users").child("id").child(userId).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-             @Override
-             public void onComplete(@NonNull Task<Void> task) {
-                 Log.i("sam" , "Succesfull");
-             }
-         });
-
-    }
 
 
 
     public void sick(View view) {
-        final String gottentitle =titledittext.getText().toString();
-        final String gottendesc =desc.getText().toString();
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                 entryRom =new EntryRom(gottentitle,gottendesc);
-                entryDatabase.entryDao().insertTask(entryRom);
-                EntryRom last=  entryDatabase.entryDao().lasttask();
-                int ids=last.getId();
-                 username=String.valueOf(ids);
-                Log.i("sam", username);
 
-                writeNewUser(username,gottentitle,gottendesc);
-            }
-        });
-
-       // writeNewUser(counterstring ,gottentitle,gottendesc);
+       getdata();
+       writeNewUser(gottentitle,gottendesc);
     }
 
     public void delete(View view) {
-        AppExecutors.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                entryRom=  entryDatabase.entryDao().selecttask(entryid);
-                entryDatabase.entryDao().deleteTask(entryRom);
-            }
-        });
+        getdata();
+        deleteuser(extraname,null,null);
     }
 
     public void update(View view) {
+        getdata();
+        updateuser(extraname,gottentitle,gottendesc);
+
+    }
+    private void writeNewUser( String name, String content) {
+        String key = mDatabase.push().getKey();
+        Log.i("sam",key);
+
+        final EntryRom user = new EntryRom(name, content);
+        user.setId(key);
+        keys=key;
+        Map<String, Object> postValues = user.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put( key, postValues);
+
+        mDatabase.updateChildren(childUpdates);
         AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
             public void run() {
-                final String gottentitle =titledittext.getText().toString();
-                final String gottendesc =desc.getText().toString();
-                EntryRom entryRom =new EntryRom(gottentitle,gottendesc);
-                entryRom.setId(entryid);
-
-                entryDatabase.entryDao().updateTask(entryRom);
-                username=String.valueOf(entryid);
-                writeNewUser(username,gottentitle,gottendesc);
-
+                entryDatabase.entryDao().insertTask(user);
             }
         });
 
     }
-    private void updateuser(String userId, String name, String content) {
-        jentry user = new jentry(name, content);
-
-
-        mDatabase.child("users").child("id").child(userId).setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+    private void updateuser(String key ,String name, String content) {
+        Log.i("sam",key);
+        final EntryRom user = new EntryRom(name, content);
+        user.setId(key);
+        Map<String, Object> postValues = user.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put( key, postValues);
+        mDatabase.updateChildren(childUpdates);
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
             @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Log.i("sam" , "Succesfull");
+            public void run() {
+                entryDatabase.entryDao().updateTask(user);
             }
         });
 
+    }
+    private void deleteuser(final String key , String name, String content) {
+        Log.i("sam",key);
+        final EntryRom user = new EntryRom(name, content);
+        Map<String, Object> postValues = user.toMap();
+        Map<String, Object> childUpdates = new HashMap<>();
+        childUpdates.put( key, postValues);
+        mDatabase.updateChildren(childUpdates);
+        AppExecutors.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                EntryRom todelete = entryDatabase.entryDao().selecttask(key);
+                Log.e("sam" , "Title = " + todelete.getTitle() + "Content = " + todelete.getContent());
+               entryDatabase.entryDao().deleteTask(todelete);
+            }
+        });
+
+    }
+    void getdata()
+    {
+        gottentitle=titledittext.getText().toString();
+        gottendesc =desc.getText().toString();
     }
 }

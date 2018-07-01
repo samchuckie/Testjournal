@@ -10,7 +10,7 @@ import android.util.Log;
 
 public abstract class EntryDatabase extends RoomDatabase {
 
-    private static final String DATABASE_NAME ="Entriessecond" ;
+    private static final String DATABASE_NAME ="twopm" ;
     private static  EntryDatabase mEntryDatabase;
     private static final Object LOCK =new Object();
     public static  EntryDatabase getinstance(Context context)

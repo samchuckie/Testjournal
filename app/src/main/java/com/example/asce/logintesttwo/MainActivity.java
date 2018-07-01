@@ -11,11 +11,26 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG =MainActivity.class.getSimpleName() ;
     private FirebaseAuth mAuth;
     String email,password;
+    private static final int RC_SIGN_IN = 123;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+//        List<AuthUI.IdpConfig> providers = Arrays.asList(
+//                new AuthUI.IdpConfig.EmailBuilder().build(),
+//        new AuthUI.IdpConfig.GoogleBuilder().build());
+//        startActivityForResult(
+//                AuthUI.getInstance()
+//                        .createSignInIntentBuilder()
+//                        .setAvailableProviders(providers)
+//                        .build(),
+//                RC_SIGN_IN);
+
+
+
 
 
     }

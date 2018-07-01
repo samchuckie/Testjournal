@@ -9,10 +9,11 @@ import android.widget.TextView;
 
 import com.example.asce.logintesttwo.Database.EntryRom;
 
+import java.util.ArrayList;
 import java.util.List;
 
 class Entryadapt extends RecyclerView.Adapter<Entryadapt.ViewHolder> {
-    List<EntryRom> adaptjentries;
+    List<EntryRom> adaptjentries =new ArrayList<>();
     ItemClickListener mItemClickListener;
 
     public Entryadapt(ItemClickListener listener) {
@@ -31,9 +32,8 @@ class Entryadapt extends RecyclerView.Adapter<Entryadapt.ViewHolder> {
     public void onBindViewHolder(@NonNull Entryadapt.ViewHolder holder, int position) {
         EntryRom jj= adaptjentries.get(position);
         String titleer =jj.getTitle();
-        String conterer =jj.getContent()
-                ;
-        holder.tt.setText(titleer);
+        String conterer =jj.getContent();
+        holder.tt.setText(titleer );
         holder.cc.setText(conterer);
 
     }
@@ -43,16 +43,17 @@ class Entryadapt extends RecyclerView.Adapter<Entryadapt.ViewHolder> {
         if (adaptjentries == null) {
             return 0;
         }
+
         return adaptjentries.size();
     }
     public void setentries(List<EntryRom> jentries)
     {
-        adaptjentries =jentries;
+        adaptjentries=jentries;
         notifyDataSetChanged();
 
     }
     public interface ItemClickListener {
-        void onItemClickListener(int itemId);
+        void onItemClickListener(String itemId);
     }
 
 
@@ -68,8 +69,11 @@ class Entryadapt extends RecyclerView.Adapter<Entryadapt.ViewHolder> {
 
         @Override
         public void onClick(View v) {
-            int elementid =adaptjentries.get(getAdapterPosition()).getId();
+            String elementid =adaptjentries.get(getAdapterPosition()).getId();
             mItemClickListener.onItemClickListener(elementid);
+        }
+        public void replace(String key)
+        {
         }
     }
 }

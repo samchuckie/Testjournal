@@ -4,18 +4,29 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
+
+import com.google.firebase.database.Exclude;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 public class EntryRom {
-    @PrimaryKey(autoGenerate = true)
+    @NonNull
+    @PrimaryKey
     @ColumnInfo(name = "id")
-    private int id;
+    private String id;
      @ColumnInfo(name = "Title")
     private String Title;
      @ColumnInfo(name = "Content")
     private String Content;
-     @Ignore
-     public EntryRom(int id ,String Title ,String Content)
+
+    public EntryRom() {
+    }
+
+    @Ignore
+     public EntryRom(String id ,String Title ,String Content)
      {
          this.id=id;
          this.Title=Title;
@@ -29,11 +40,11 @@ public class EntryRom {
         this.Content=Content;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -51,5 +62,13 @@ public class EntryRom {
 
     public void setContent(String mContent) {
         this.Content = mContent;
+    }
+    @Exclude
+    public Map<String, Object> toMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("Title", Title);
+        result.put("Content", Content);
+        return result;
+
     }
 }
